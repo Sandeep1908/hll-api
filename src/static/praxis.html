@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+    <link rel='stylesheet' type='text/css' href='https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css' >
+    <style>
+    body {
+    background: #eee !important;
+}
+
+.wrapper {
+    margin-top: 80px;
+    margin-bottom: 80px;
+}
+
+.form-signin {
+    max-width: 380px;
+    padding: 15px 35px 45px;
+    margin: 0 auto;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 30px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type=text] {
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.form-signin input[type=password] {
+    margin-bottom: 20px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+</style>
+<meta charset='UTF-8'>
+    <title></title>
+</head>
+<body>
+<div class="wrapper">
+    <form id='theForm' class="form-signin">
+        <h2 class="form-signin-heading">Send Payment Link</h2>
+        <input id='email' type="text" class="form-control" name="username" placeholder="Email Address" required="" autofocus="" />
+
+        <button id='send'  style='margin-top: 2rem' class="btn btn-lg btn-primary btn-block" type="submit">Get Payment Link</button>
+        <div id='link-div'></div>
+    </form>
+</div>
+</body>
+<script>
+    var isProd = window.location.protocol === 'https:'
+    var button = document.getElementById('send')
+    document.getElementById('theForm').addEventListener('submit', (e) => {
+    e.preventDefault()
+    document.getElementById('link-div').innerHTML= ''
+    button.disabled = true
+    button.innerText = 'Requesting a new link ...'
+    fetch(isProd ? `https://yf6n30lp12.execute-api.ap-south-1.amazonaws.com/initiate-payment-praxis-2?email=${document.getElementById('email').value}` : `http://localhost:3001/initiate-payment-praxis-2?email=${document.getElementById('email').value}`, {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json'
+},
+})
+    .then((res) => {
+    button.innerText = 'Link ready!'
+    setTimeout(() => {
+    button.innerText = 'Get Payment Link'
+    button.disabled = false
+}, 500)
+    console.log(res.text().then(text => {
+    document.getElementById('link-div').innerHTML = `
+          <h5>Your payment link is ready </h5>
+          <a href='${text}'>Pay here</a>
+        `
+}));
+})
+})
+
+</script>
+</html>
+
